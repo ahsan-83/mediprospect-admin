@@ -4,6 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import Login from "./pages/Login";
+import WebsiteSelection from "./pages/WebsiteSelection";
 import DoctorInformation from "./pages/DoctorInformation";
 import Specialty from "./pages/Specialty";
 import Disease from "./pages/Disease";
@@ -25,23 +28,36 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<DoctorInformation />} />
-            <Route path="/specialty" element={<Specialty />} />
-            <Route path="/disease" element={<Disease />} />
-            <Route path="/experience" element={<Experience />} />
-            <Route path="/education" element={<Education />} />
-            <Route path="/certification" element={<Certification />} />
-            <Route path="/membership" element={<Membership />} />
-            <Route path="/awards" element={<Awards />} />
-            <Route path="/video" element={<VideoPage />} />
-            <Route path="/consultation-location" element={<ConsultationLocation />} />
-            <Route path="/contact" element={<Contact />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/website-selection" element={
+            <ProtectedRoute>
+              <WebsiteSelection />
+            </ProtectedRoute>
+          } />
+          <Route path="/*" element={
+            <ProtectedRoute>
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<DoctorInformation />} />
+                  <Route path="/doctor-information" element={<DoctorInformation />} />
+                  <Route path="/specialty" element={<Specialty />} />
+                  <Route path="/disease" element={<Disease />} />
+                  <Route path="/experience" element={<Experience />} />
+                  <Route path="/education" element={<Education />} />
+                  <Route path="/certification" element={<Certification />} />
+                  <Route path="/membership" element={<Membership />} />
+                  <Route path="/awards" element={<Awards />} />
+                  <Route path="/video" element={<VideoPage />} />
+                  <Route path="/consultation-location" element={<ConsultationLocation />} />
+                  <Route path="/contact" element={<Contact />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Layout>
+            </ProtectedRoute>
+          } />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
