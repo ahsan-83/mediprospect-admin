@@ -16,6 +16,7 @@ import Certification from "./pages/Certification";
 import Membership from "./pages/Membership";
 import Awards from "./pages/Awards";
 import VideoPage from "./pages/VideoPage";
+import Images from "./pages/Images";
 import ConsultationLocation from "./pages/ConsultationLocation";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -49,6 +50,7 @@ const App = () => (
                   <Route path="/membership" element={<Membership />} />
                   <Route path="/awards" element={<Awards />} />
                   <Route path="/video" element={<VideoPage />} />
+                  <Route path="/images" element={<Images />} />
                   <Route path="/consultation-location" element={<ConsultationLocation />} />
                   <Route path="/contact" element={<Contact />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

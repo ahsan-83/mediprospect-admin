@@ -9,6 +9,7 @@ import {
   Users,
   Trophy,
   Video,
+  Image,
   MapPin,
   Phone,
   LogOut,
@@ -38,6 +39,7 @@ const menuItems = [
   { title: "Membership", url: "/membership", icon: Users },
   { title: "Awards", url: "/awards", icon: Trophy },
   { title: "Video", url: "/video", icon: Video },
+  { title: "Images", url: "/images", icon: Image },
   { title: "Consultation Location", url: "/consultation-location", icon: MapPin },
   { title: "Contact", url: "/contact", icon: Phone },
 ];
