@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Upload, Image as ImageIcon } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Upload, Image as ImageIcon, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Mock data for demonstration
@@ -19,7 +20,26 @@ export default function Images() {
   const [images, setImages] = useState(mockImages);
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Error",
+          description: "Please select an image file",
+          variant: "destructive",
+        });
+        return;
+      }
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
 
   const handleFileSelect = () => {
     // Mock upload functionality
@@ -32,20 +52,39 @@ export default function Images() {
       return;
     }
 
+    if (!selectedFile) {
+      toast({
+        title: "Error",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const newImage = {
       id: images.length + 1,
       title: title,
-      url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400",
-      size: "2.5 MB"
+      url: previewUrl || "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400",
+      size: `${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`
     };
 
     setImages([newImage, ...images]);
     setTitle("");
+    setSelectedFile(null);
+    setPreviewUrl(null);
     setOpen(false);
 
     toast({
       title: "Success",
       description: "Image uploaded successfully (mockup)",
+    });
+  };
+
+  const handleDelete = (id: number) => {
+    setImages(images.filter(img => img.id !== id));
+    toast({
+      title: "Success",
+      description: "Image deleted successfully",
     });
   };
 
@@ -83,11 +122,24 @@ export default function Images() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="file">Select Image</Label>
-                <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                  <ImageIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Click to select an image (mockup)
-                  </p>
+                <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
+                  <input
+                    id="file"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <label htmlFor="file" className="cursor-pointer">
+                    {previewUrl ? (
+                      <img src={previewUrl} alt="Preview" className="max-h-48 mx-auto mb-4 rounded" />
+                    ) : (
+                      <ImageIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                    )}
+                    <p className="text-sm text-muted-foreground">
+                      {selectedFile ? selectedFile.name : "Click to select an image"}
+                    </p>
+                  </label>
                 </div>
               </div>
               <Button onClick={handleFileSelect} className="w-full">
@@ -107,6 +159,31 @@ export default function Images() {
                 alt={image.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Image</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete "{image.title}"? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleDelete(image.id)}>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
             <CardContent className="p-4">
               <h3 className="font-semibold truncate">{image.title}</h3>
